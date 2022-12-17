@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 import java.io.IOException;
+import java.util.Date;
 
 // org.crac could be used instead of jdk.crac
 // https://github.com/CRaC/docs#orgcrac
@@ -11,15 +12,18 @@ import jdk.crac.Context;
 import jdk.crac.Core;
 import jdk.crac.Resource;
 
+import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.eclipse.jetty.util.log.Log;
 
 class ServerManager implements Resource
 {
     Server server;
     Thread preventExitThread;
+
 
     public ServerManager(int port, Handler handler) throws Exception {
         server = new Server(8080);
@@ -55,6 +59,7 @@ class ServerManager implements Resource
 public class App extends AbstractHandler
 {
     static ServerManager serverManager;
+    protected static final org.eclipse.jetty.util.log.Logger log = Log.getLogger(App.class);
 
     public void handle(String target,
                        Request baseRequest,
@@ -65,11 +70,13 @@ public class App extends AbstractHandler
         response.setContentType("text/html;charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
         baseRequest.setHandled(true);
-        response.getWriter().println("Hello World");
+        log.info("Response at " + new Date());
+        response.getWriter().println("Hello World") ;
     }
 
     public static void main( String[] args ) throws Exception
     {
+        log.info("Starting main at " + new Date());
         serverManager = new ServerManager(8080, new App());
     }
 }
